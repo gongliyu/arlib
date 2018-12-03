@@ -2,8 +2,9 @@
 
 [![Build Status](https://travis-ci.com/gongliyu/arlib.svg?branch=master)](https://travis-ci.com/gongliyu/arlib)
 [![Documentation Status](https://readthedocs.org/projects/arlib/badge/?version=latest)](https://arlib.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/gongliyu/arlib/branch/master/graph/badge.svg)](https://codecov.io/gh/gongliyu/arlib)
-
+[![Coverage Status](https://coveralls.io/repos/github/gongliyu/arlib/badge.svg?branch=master)](https://coveralls.io/github/gongliyu/arlib?branch=master)
+<!-- [![codecov](https://codecov.io/gh/gongliyu/arlib/branch/master/graph/badge.svg)](https://codecov.io/gh/gongliyu/arlib) -->
+ 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
