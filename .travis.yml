@@ -12,9 +12,10 @@ matrix:
 
 install:
   - pip install codecov
+  - pip install pytest pytest-cov
 
 script:
-  - coverage run -m unittest discover
+  - pytest --cov=./
 
 after_success:
   - codecov
