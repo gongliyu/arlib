@@ -1,0 +1,8 @@
+# version file
+include VERSION
+
+# license file
+include LICENSE
+
+# readme file
+include README.md

@@ -1,0 +1,13 @@
+[run]
+source=
+    arlib/
+
+omit=
+    tests/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    return NotImplemented
+    raise NotImplementedError
+    pass

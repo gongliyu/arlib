@@ -1,0 +1,23 @@
+coverage:
+  precision: 2
+  round: down
+  range: 70...98
+
+  ignore:
+    - tests/
+
+flags:
+  project:
+    enabled: yes
+    target: 50%
+    if_no_uploads: error
+    if_not_found: success
+    if_ci_failed: error
+
+  patch:
+    default:
+      enabled: yes
+      target: 50%
+      if_no_uploads: error
+      if_not_found: success
+      if_ci_failed: error
