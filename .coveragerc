@@ -1,6 +1,7 @@
 [run]
 source=
     arlib/
+    arlib/__init__.py
 
 omit=
     tests/*
