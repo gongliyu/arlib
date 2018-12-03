@@ -11,7 +11,7 @@ matrix:
     - python: pypy3
 
 install:
-  - pip install --user codecov
+  - pip install codecov
 
 script:
   - coverage run -m unittest discover
