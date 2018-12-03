@@ -11,11 +11,11 @@ matrix:
     - python: pypy3
 
 install:
-  - pip install codecov
+  - pip install python-coveralls
   - pip install pytest pytest-cov
 
 script:
   - pytest --cov=./
 
 after_success:
-  - codecov
+  - coveralls
