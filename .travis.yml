@@ -11,10 +11,10 @@ matrix:
     - python: pypy3
 
 install:
-  - pip install codecov
+  - pip install --user codecov
 
 script:
-  - coverage run -m unittest discover tests
+  - coverage run -m unittest discover
 
 after_success:
-  - codecov -t 3d819dfb-67bf-43af-86e4-36318ea64b32
+  - codecov
