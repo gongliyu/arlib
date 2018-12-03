@@ -1,10 +1,13 @@
 [run]
 source=
     arlib/
+
+include=
     arlib/__init__.py
 
 omit=
     tests/*
+    setup.py
 
 [report]
 exclude_lines =
