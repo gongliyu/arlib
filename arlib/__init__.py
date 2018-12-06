@@ -2,7 +2,7 @@
 
 import tarfile, zipfile, io, os, collections, bisect, abc, fnmatch, sys
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 _auto_engine = []
 
