@@ -82,12 +82,10 @@ Since :func:`register_auto_engine` returns the input function object
    def func(path, mode):
        # function definition
 
-To parameterize the decoration with :code:`priority` and :code:`prepend`,
-:func:`register_auto_engine_decorator` can be
-
+The function :func:`register_auto_engine` also support another version of calling signature :code:`arlib.register_auto_engine(priority, prepend)`, which will return a wrapped decorator with arguments. The typical usage is:
 .. code-block:: python
                 
-   @arlib.register_auto_engine_decorator(priority=50, prepend=False)
+   @arlib.register_auto_engine(priority=50, prepend=False)
    def func(path, mode):
        # function definition
             

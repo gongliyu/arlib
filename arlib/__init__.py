@@ -14,8 +14,55 @@ if sys.version_info[0] >= 3 and sys.version_info[1] >= 6:
 else:
     _path_classes = (str, bytes)
     
+def register_auto_engine(*args, **kwargs):
+    """Register automatic engine determing function
+    
+    Two possible signatures:
 
-def register_auto_engine(func, priority=50, prepend=False):
+      * :code:`register_auto_engine(func, priority=50, prepend=False)`
+      * :code:`register_auto-engine(priority=50, prepend=False)`
+
+    The first one can be used as a regular function as well as a
+    decorator. The second one is a decorator with arguments
+
+    Args:
+
+      func (callable): A callable which determines archive engine from
+        file properties and open mode. The signature should be:
+        func(path, mode) where path is a file-like or path-like
+        object, and mode str to open the file.
+
+      priority (int, float): Priority of the func, small number means
+        higher priority. When multiple functions are registered by
+        multiple call of register_auto_engine, functions will be used
+        in an ordering determined by thier priortities. Default to 50.
+
+      prepend (bool): If there is already a function with the same
+        priority registered, insert to the left (before) or right
+        (after) of it. Default to False.
+
+    Return:
+
+      The first version of signature will return the input callable
+      :code:`func`, therefore it can be used as a decorator (without
+      arguments). The second version will return a decorator wrap.
+
+    """
+    if len(args) + len(kwargs) == 0:
+        return _register_auto_engine2()
+
+    if len(args) > 0:
+        if callable(args[0]):
+            return _register_auto_engine1(*args, **kwargs)
+        else:
+            return _register_auto_engine2(*args, **kwargs)
+
+    if 'func' in kwargs:
+        return _register_auto_engine1(*args, **kwargs)
+    else:
+        return _register_auto_engine2(*args, **kwargs)
+    
+def _register_auto_engine1(func, priority=50, prepend=False):
     """Register automatic engine determining function
 
     Args:
@@ -43,10 +90,6 @@ def register_auto_engine(func, priority=50, prepend=False):
 
       This function could be used as a non-argument decorator.
 
-    See also:
-
-      :func:`register_auto_engine_decorator`
-
     """
     p = [x[0] for x in _auto_engine]
     if prepend:
@@ -56,7 +99,7 @@ def register_auto_engine(func, priority=50, prepend=False):
     _auto_engine.insert(i, (priority, func))
     return func
 
-def register_auto_engine_decorator(priority=50, prepend=False):
+def _register_auto_engine2(priority=50, prepend=False):
     """Decorator with arguments for registering auto engine functions
 
     Args:
@@ -85,7 +128,7 @@ def register_auto_engine_decorator(priority=50, prepend=False):
     return _decorator_wrapper
 
 
-@register_auto_engine_decorator(50, True)
+@register_auto_engine(50, True)
 def auto_engine_zip(path, mode):
     if 'r' in mode:
         if isinstance(path, zipfile.ZipFile):
@@ -117,7 +160,7 @@ def auto_engine_zip(path, mode):
                 return ZipArchive
     return None
 
-@register_auto_engine_decorator(50, False)
+@register_auto_engine(50, False)
 def auto_engine_tar(path, mode):
     if 'r' in mode:
         if isinstance(path, tarfile.TarFile):
@@ -143,7 +186,7 @@ def auto_engine_tar(path, mode):
                 return TarArchive
     return None
 
-@register_auto_engine_decorator(50, False)
+@register_auto_engine(50, False)
 def auto_engine_dir(path, mode):
     if 'r' in mode:
         if isinstance(path, _path_classes):
