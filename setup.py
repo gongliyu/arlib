@@ -32,5 +32,6 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/gongliyu/arlib',
+    include_package_data=True,
     packages=['arlib'],
     classifiers=classifiers)        
