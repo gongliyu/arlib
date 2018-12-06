@@ -14,6 +14,7 @@
 #
 import os
 import sys
+import codecs, re
 #sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
 
@@ -24,14 +25,26 @@ project = 'arlib'
 copyright = '2018, Liyu Gong'
 author = 'Liyu Gong'
 
+repo_root = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..')
 
-with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'VERSION')) as f:
-    __version__ = f.read().strip()
+def read(repo_root, *parts):
+    with codecs.open(os.path.join(repo_root, *parts), 'r') as fp:
+        return fp.read()
+
+def find_version(repo_root, *file_paths):
+    version_file = read(repo_root, *file_paths)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+                              version_file, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
+
+
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
 #release = '0.0.1'
-release = __version__
+release = find_version(repo_root, 'arlib', '__init__.py')
 
 
 # -- General configuration ---------------------------------------------------

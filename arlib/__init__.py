@@ -2,10 +2,7 @@
 
 import tarfile, zipfile, io, os, collections, bisect, abc, fnmatch, sys
 
-# load version info
-#with open(pathlib.Path(__file__).parent.parent/'VERSION') as f:
-with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'VERSION')) as f:
-    __version__ = f.read().strip()
+__version__ = '0.0.3'
 
 _auto_engine = []
 
