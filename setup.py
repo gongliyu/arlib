@@ -20,13 +20,13 @@ classifiers = [
     'Programming Language :: Python :: Implementation :: PyPy'
     ]
 
-here = os.path.abspath(os.path.dirname(__file__))
+repo_root = os.path.abspath(os.path.dirname(__file__))
 
-def read(*parts):
-    with codecs.open(os.path.join(here, *parts), 'r') as fp:
+def read(repo_root, *parts):
+    with codecs.open(os.path.join(repo_root, *parts), 'r') as fp:
         return fp.read()
 
-def find_version(*file_paths):
+def find_version(repo_root, *file_paths):
     version_file = read(*file_paths)
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
                               version_file, re.M)
@@ -36,7 +36,7 @@ def find_version(*file_paths):
 
 setup(
     name='arlib',
-    version=find_version('arlib', '__init__.py'),
+    version=find_version(repo_root, 'arlib', '__init__.py'),
     author='Liyu Gong',
     author_email='gongliyu@gmail.com',
     description='Common interface for archive manipulation',
