@@ -67,7 +67,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-    'm2r'
+    'sphinx.ext.extlinks',
+    'm2r',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -214,3 +215,9 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+# external links
+extlinks = {
+    'issue': ('https://github.com/gongliyu/arlib/issues/%s', 'Issue #'),
+    'pr': ('https://github.com/gongliyu/arlib/pull/%s', 'PR #')
+}
