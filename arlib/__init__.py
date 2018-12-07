@@ -2,6 +2,11 @@
 
 import tarfile, zipfile, io, os, collections, bisect, abc, fnmatch, sys
 
+if sys.version_info[0] == 2:
+    import __builtin__ as builtins
+else:
+    import builtins
+    
 __version__ = '0.0.4'
 
 _auto_engine = []
@@ -54,9 +59,10 @@ def register_auto_engine(*args, **kwargs):
         else:
             return _register_auto_engine2(*args, **kwargs)
 
-    if 'func' in kwargs:
-        return _register_auto_engine1(*args, **kwargs)
-    else:
+
+    if 'func' in kwargs:      # pragma: no cover
+        return _register_auto_engine1(*args, **kwargs) 
+    else:                     # pragma: no cover
         return _register_auto_engine2(*args, **kwargs)
     
 def _register_auto_engine1(func, priority=50, prepend=False):
@@ -183,7 +189,7 @@ def auto_engine_tar(path, mode):
                 return TarArchive
     return None
 
-@register_auto_engine(50, False)
+@register_auto_engine
 def auto_engine_dir(path, mode):
     if 'r' in mode:
         if isinstance(path, _path_classes):
@@ -432,7 +438,7 @@ class DirArchive(Archive):
     """Archive engine that treat a directory as an archive using `pathlib`
     module
     """
-    def __init__(self, path):
+    def __init__(self, path, mode='r'):
         self._file = os.path.abspath(path)
         
 
@@ -459,5 +465,10 @@ class DirArchive(Archive):
 
         """
         path = os.path.join(self._file, name)
-        return open(path, mode, **kwargs)
+        return builtins.open(path, mode, **kwargs)
 
+
+def open(*args, **kwargs):
+    """Shortcut to constructor of :class:`Archive`
+    """
+    return Archive(*args, **kwargs)
