@@ -13,6 +13,7 @@ Welcome to arlib's documentation!
    intro
    guide
    api
+   changelog
 
 
 Indices and tables
