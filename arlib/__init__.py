@@ -197,7 +197,7 @@ def auto_engine_dir(path, mode):
                 return DirArchive
     return None
 
-def auto_engine(path, mode):
+def auto_engine(path, mode='r'):
     """Automatically determine engine type from file properties and file
     mode using the registered determining functions
 
@@ -206,7 +206,7 @@ def auto_engine(path, mode):
       path (file-like, path-like): Opened file object or path to the
         archive file
 
-      mode (str): Mode str to open the file
+      mode (str): Mode str to open the file. Default to "r".
 
     Return:
 
@@ -224,7 +224,7 @@ def auto_engine(path, mode):
             break
     return engine
 
-def is_archive(path, mode):
+def is_archive(path, mode='r'):
     """Determine if the file specified by :code:`path` is a valid archive
     when opened with :code:`mode`
 
@@ -235,9 +235,9 @@ def is_archive(path, mode):
     Args:
     
       path (file-like, path-like): Opened file object or path to the
-        archive file
+        archive file.
 
-      mode (str): Mode str to open the file
+      mode (str): Mode str to open the file. Default to "r".
 
     Return:
 
@@ -260,6 +260,34 @@ def is_archive(path, mode):
     """
     return auto_engine(path, mode) is not None
     
+
+def assert_is_archive(path, mode):
+    """Assert that :code:`path` can be opened as a valid archive with
+    :code:`mode`
+
+    Args:
+    
+      path (file-like, path-like): Opened file object or path to the
+        archive file.
+
+      mode (str): Mode str to open the file. Default to "r".
+    
+    Examples:
+    
+      >>> assert_is_archive('a.tar.gz', 'w')
+      >>> assert_is_archive('a.txt', 'w')
+      Traceback (most recent call last):
+        File "<stdin>", line 1, in <module>
+      ValueError: a.txt cannot be opened as a valid archive with w
+
+    See also:
+
+      :func:`is_archive`
+
+    """
+    if not is_archive(path, mode):
+        raise ValueError(str(path)+' cannot be opened as a valid archive '
+                         'with '+mode)
 
 class Archive:
 
