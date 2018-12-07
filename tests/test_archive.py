@@ -13,9 +13,9 @@ data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
     open(os.path.join(data_path, 'zipfile.zip'), 'rb'),
     ])
 def test_arlib_read(fname):
-    with arlib.open(fname, 'r') as ar:
-        assert ar.member_names == ['a.txt', 'b.txt']
-        if sys.version_info[0] >= 3:
+    if sys.version_info[0] >= 3:
+        with arlib.open(fname, 'r') as ar:
+            assert ar.member_names == ['a.txt', 'b.txt']
             with ar.open_member('a.txt', 'r') as f:
                 assert f.read() == 'a'
             with ar.open_member('b.txt', 'r') as f:
