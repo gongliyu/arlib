@@ -256,7 +256,7 @@ class Archive:
         if engine is None:
             engine = auto_engine(path, mode)
             if engine is None:
-                raise RuntimeError('cannot automatically determine engine.')
+                raise RuntimeError('Cannot automatically determine engine.')
         if not issubclass(engine, Archive):
             raise TypeError('engine must be a subclass of Archive, received:'
                             ' '+str(engine))

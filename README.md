@@ -1,4 +1,4 @@
-*arlib*: Common interface for archive manipulation
+*arlib*: Common interface for archive manipulation (Tar, Zip, etc)
 
 [![Build Status](https://travis-ci.com/gongliyu/arlib.svg?branch=master)](https://travis-ci.com/gongliyu/arlib)
 [![Documentation Status](https://readthedocs.org/projects/arlib/badge/?version=latest)](https://arlib.readthedocs.io/en/latest/?badge=latest)
@@ -116,4 +116,4 @@ The *arlib* package is released under the [MIT License](LICENSE)
 
 ## Documentation
 
-https://arlib.readthedocs.io/en/latest/
+https://arlib.readthedocs.io
