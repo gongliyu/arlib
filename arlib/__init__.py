@@ -213,15 +213,56 @@ def auto_engine(path, mode):
       type, NoneType: a subclass of Archive if successfully find one
         engine, otherwise None
 
+    See also:
+
+      :func:`is_archive`
+
     """
     for _, func in _auto_engine:
         engine = func(path, mode)
         if engine is not None:
             break
     return engine
+
+def is_archive(path, mode):
+    """Determine if the file specified by :code:`path` is a valid archive
+    when opened with :code:`mode`
+
+    Basically, the function checks the result of :func:`auto_engien`,
+    and return :code:`True` if the result is not None, and return
+    :code:`False` otherwise.
+
+    Args:
+    
+      path (file-like, path-like): Opened file object or path to the
+        archive file
+
+      mode (str): Mode str to open the file
+
+    Return:
+
+      bool: :code:`True` if the path is valid archive, :code:`False`
+    otherwise.
+
+    Examples:
+
+      >>> is_archive('a.tar.gz', 'w')
+      True
+      >>> is_archive('a.tar.bz2', 'w')
+      True
+      >>> is_archive('a.txt', 'w')
+      False
+
+    See also:
+
+      :func:`auto_engine`
+
+    """
+    return auto_engine(path, mode) is not None
     
 
 class Archive:
+
     """Common-interface to different type of archive files manipulation
     
     Args:
