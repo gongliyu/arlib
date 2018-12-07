@@ -35,6 +35,9 @@ design is inspired by the :mod:`pathlib`. The type of concrete engines
 are automatically determined by the archive file property and the
 *mode* argument to open the archive.
 
+The function :func:`open` is a shortcut to the constructor of
+:class:`Archive`.
+
 Automatically engine selection
 ------------------------------
 

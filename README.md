@@ -91,6 +91,12 @@ ar = arlib.Archive('abc.zip', 'r')
 will create an object of type *arlib.ZipArchive* if the corresponding
 files exist and are real tar or zip files.
 
+The function *arlib.open* works as a shortcut to the constructor of *arlib.Archive*:
+
+``` python
+ar = arlib.open('abc.tar.gz', 'r')
+```
+
 ### List member names
 
 The property *member_names* will return a list of the names of members
