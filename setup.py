@@ -1,6 +1,9 @@
 import os, codecs, re
 from setuptools import setup
 
+with open('requirements.txt') as f:
+    reqs = list(f.read().strip().split('\n'))
+
 with open('README.md', 'r') as f:
     long_description = f.read()
 
@@ -41,6 +44,7 @@ setup(
     author_email='gongliyu@gmail.com',
     description='Common interface for archive manipulation',
     long_description=long_description,
+    install_requires=reqs,
     long_description_content_type='text/markdown',
     url='https://github.com/gongliyu/arlib',
     packages=['arlib'],

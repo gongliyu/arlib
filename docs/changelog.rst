@@ -10,6 +10,7 @@ ChangeLog
 * Add :func:`is_archive` to determine if a file could be opened
   as a valid archive (:issue:`3`, :pr:`4`).
 * Add :func:`assert_is_archive` (:pr:`5`).
+* Reimplement auto_engine mechanism using *decoutils* package
 
 0.0.3
 -----
