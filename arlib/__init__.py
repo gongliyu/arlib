@@ -424,6 +424,8 @@ class TarArchive(Archive):
         if isinstance(path, tarfile.TarFile):
             self._file = path
             self._need_close = False
+        elif isinstance(path, io.IOBase):
+            self._file = tarfile.open(fileobj=path, mode=mode, **kwargs)
         else:
             self._file = tarfile.open(path, mode=mode, **kwargs)
 

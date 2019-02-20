@@ -129,3 +129,12 @@ def test_extract(fname, members):
                     assert ar1.open_member(name,'rb').read() == ar2.open_member(name, 'rb').read()
     shutil.rmtree(dst)
                 
+
+def test_tar_archive_fileobj():
+    with open(os.path.join(data_path, 'tarfile.tar.gz'), 'rb') as f:
+        with arlib.TarArchive(f) as ar:
+            assert set(ar.member_names) == set(['a.txt', 'b.txt'])
+    with open(os.path.join(data_path, 'zipfile.zip'), 'rb') as f:
+        with pytest.raises(Exception):
+            arlib.TarArchive(f)
+    
