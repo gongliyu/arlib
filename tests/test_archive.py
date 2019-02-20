@@ -37,3 +37,13 @@ def test_auto_engine_exception(fname, mode):
     with pytest.raises(Exception):
         arlib.auto_engine(fname, mode)
 
+
+@pytest.mark.parametrize('fname',[
+    'member_check',
+    'member_check.zip',
+    'member_check.tar'
+    ])
+def test_member_check(fname):
+    with arlib.open(os.path.join(data_path, fname)) as ar:
+        assert ar.member_is_dir('dir')
+        assert ar.member_is_file('a.txt')

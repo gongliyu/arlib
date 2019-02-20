@@ -11,6 +11,8 @@ ChangeLog
   as a valid archive (:issue:`3`, :pr:`4`).
 * Add :func:`assert_is_archive` (:pr:`5`).
 * Reimplement auto_engine mechanism using *decoutils* package
+* Add functionality to check whether a member is a directory or
+  regular file (:pr:`9`).
 
 0.0.3
 -----

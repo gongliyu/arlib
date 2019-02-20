@@ -111,6 +111,14 @@ implement the property using the underlying :mod:`zipfile` and
 :mod:`tarfile` modules. :attr:`Archive.member_names` provides a
 uniform interface to corresponding underlying functions.
 
+Check member properties
+---------------------------
+
+The methods :meth:`Archive.member_is_dir` and
+:meth:`Archive.member_is_file` whether the specified member is a
+directory or a regular file.
+
+
 Open member as a file object
 ----------------------------
 

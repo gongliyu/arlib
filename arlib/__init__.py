@@ -252,7 +252,7 @@ class Archive:
         * None: Automatically determine engines by file properties and
           mode
 
-      \**kwargs : Additional keyword arguments passed to the underlying
+      kwargs : Additional keyword arguments passed to the underlying
         engine constructor
 
     Note:
@@ -299,7 +299,7 @@ class Archive:
           mode (str): The mode to open the member, same as in
             :func:`open`. Default to 'r'.
 
-          \**kwargs: Additional keyword arguments that will be passed
+          kwargs: Additional keyword arguments that will be passed
             to the underlying function.
 
         Return:
@@ -310,6 +310,48 @@ class Archive:
         """
         pass
 
+    def validate_member_name(self, name):
+        names = self.member_names
+        name.replace('\\', '/')
+        assert len(name) > 0
+        if name in names:
+            return name
+        elif name[-1] != '/' and name+'/' in names:
+            return name + '/'
+        else:
+            raise ValueError(name+' is not a valid member name.')
+        
+
+    def member_is_dir(self, name):
+        """Check if a specific member is a directory
+
+        Args:
+        
+          name (str): Member name.
+
+        Returns:
+
+        bool: True if the member is a directory, False otherwise.
+        """
+        name = self.validate_member_name(name)
+        return name.endswith('/')
+
+
+    def member_is_file(self, name):
+        """Check if a specific member is a regular file
+
+        Args:
+        
+          name (str): Member name.
+
+        Returns:
+
+        bool: True if the member is a regular file, False otherwise.
+
+        """
+        return not self.member_is_dir(name)
+    
+        
     def close(self):
         """Release resources such as closing files etc
         """
@@ -342,7 +384,7 @@ class TarArchive(Archive):
       mode (str): The mode to open the member, same as in
         :func:`open`.
 
-      \**kwargs : Other keyword arguments that will be passed to the
+      kwargs : Other keyword arguments that will be passed to the
         underlying function.
 
     """
@@ -357,6 +399,10 @@ class TarArchive(Archive):
     @property
     def member_names(self):
         names = self._file.getnames()
+        # normalize names so that name of members which are
+        # directories will be appended with a '/'
+        names = [x+'/' if self._file.getmember(x).isdir() else x
+                for x in names]
         return names
 
 
@@ -382,15 +428,19 @@ class TarArchive(Archive):
         if 'r' not in mode:
             raise ValueError('members of tar archive can not be opened in'
                              ' write mode')
+        if self.member_is_dir(name):
+            raise ValueError('directory member cannot be opened.')
+        
         f = self._file.extractfile(name)
         if 'b' not in mode:
             if sys.version_info[0] >= 3:
                 f = io.TextIOWrapper(f)
             else:
-                raise ValueError('I do not know how to wrap binary file object'
-                                 ' to text io.')
+                raise ValueError('I do not know how to wrap binary file'
+                                 ' object to text io.')
         return f
 
+    
     def close(self):
         if self._need_close:
             self._file.close()
@@ -423,7 +473,7 @@ class ZipArchive(Archive):
 
           mode (str): The mode argument to open. Same as in :func:`open`.
 
-          \**kwargs: Additional keyword arguments that will be passed
+          kwargs: Additional keyword arguments that will be passed
             to :func:`zipfile.ZipFile.open`
 
         
@@ -432,10 +482,16 @@ class ZipArchive(Archive):
           file-like: The opened file object associated with the member
           file.
         """
+        if 'r' in mode:
+            name = self.validate_member_name(name)
+            if name.endswith('/'):
+                raise ValueError('Directory member cannot be opened in'
+                                 ' read mode.')
         f = self._file.open(name, mode)
         if 'b' not in mode:
             f = io.TextIOWrapper(f)
         return f
+
 
     def close(self):
         if self._need_close:
@@ -452,8 +508,11 @@ class DirArchive(Archive):
 
     @property
     def member_names(self):
-        return os.listdir(self._file)
+        names = [x+'/' if os.path.isdir(os.path.join(self._file, x)) else x
+                 for x in os.listdir(self._file)]
+        return names
 
+    
     def open_member(self, name, mode='r', **kwargs):
         """Open a member in the directory
 
@@ -463,7 +522,7 @@ class DirArchive(Archive):
 
           mode (str): The mode argument to open. Same as in :func:`open`.
 
-          \**kwargs: Additional keyword arguments that will be passed
+          kwargs: Additional keyword arguments that will be passed
             to :func:`open`
         
         Return:
@@ -472,6 +531,10 @@ class DirArchive(Archive):
           file.
 
         """
+        if 'r' in mode:
+            name = self.validate_member_name(name)
+            if name.endswith('/'):
+                raise ValueError('Directory member cannot be opened.')
         path = os.path.join(self._file, name)
         return builtins.open(path, mode, **kwargs)
 
