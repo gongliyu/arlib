@@ -130,6 +130,19 @@ argument the same as in the built-in :func:`open`
 function. :code:`kwargs` are keyword arguments that will be passed to
 underlying methods in :mod:`zipfile`, :mod:`tarfile` etc.
 
+Extract members to a location
+------------------------------
+
+The method :meth:`Archive.extract` provide a uniform interface for
+extracting members to a location. Two optional arguments can be
+specified: :code:`path` for the location of the destination,
+:code:`members` for a list of members to extract.
+
+.. code-block:: python
+
+   with arlib.open('abc.tar') as ar:
+       ar.extract('c:/', ['a.txt','dir2/'])
+
 
 Context manager
 ---------------
@@ -172,3 +185,8 @@ types. Adding a new archive type includes the following steps:
       @register_auto_engine
       def another_auto_engine(path, mode):
           # definition
+
+#. (optional) override methods :meth:`Archive.extract`. The default
+   implementation in :class:`Archive` use shutil.copyfileobj copy
+   corresponding members to the destination. Use the corresponding
+   archive implementation may be more efficient.

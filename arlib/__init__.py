@@ -4,6 +4,7 @@ import tarfile
 import zipfile
 import io
 import os
+import shutil
 import collections
 import bisect
 import abc
@@ -12,18 +13,18 @@ import sys
 
 import decoutils
 
-if sys.version_info[0] == 2:
+if sys.version_info[0] == 2: #pragma no cover
     import __builtin__ as builtins
-else:
+else: #pragma no cover
     import builtins
     
 __version__ = '0.0.4'
 
 _auto_engine = []
 
-if sys.version_info[0] >= 3 and sys.version_info[1] >= 6:
+if sys.version_info[0] >= 3 and sys.version_info[1] >= 6: #pragma no cover
     _path_classes = (str, bytes, os.PathLike)
-else:
+else: #pragma no cover
     _path_classes = (str, bytes)
 
 
@@ -63,7 +64,7 @@ def register_auto_engine(func, priority=50, prepend=False):
 
     """
     p = [x[0] for x in _auto_engine]
-    if prepend:
+    if prepend: #pragma no cover
         i = bisect.bisect_left(p, priority)
     else:
         i = bisect.bisect_right(p, priority)
@@ -78,7 +79,7 @@ def auto_engine_zip(path, mode):
                 raise ValueError('Mode of ZipFile object is not compatible'
                                  ' with the mode argument.')
             return ZipArchive
-        
+
         if (sys.version_info[0] >= 3 and sys.version_info[1] >= 1 and
             isinstance(path, io.IOBase) and 'b' in path.mode):
             if not path.readable():
@@ -116,7 +117,7 @@ def auto_engine_tar(path, mode):
             if os.path.isfile(path) and tarfile.is_tarfile(path):
                 return TarArchive
     else:
-        if isinstance(path, tarfile.TarFile):
+        if isinstance(path, tarfile.TarFile): #pragma no cover
             if path.mode not in ['a', 'w', 'x']:
                 raise ValueError('Mode of TarFile object is not compatible'
                                  ' with the mode argument.')
@@ -350,6 +351,36 @@ class Archive:
 
         """
         return not self.member_is_dir(name)
+
+
+    def extract(self, path=None, members=None): #pragma no cover
+        """Extract members to a location
+
+        Args:
+
+          path (path-like): Location of the extracted files.
+
+          members (Seq[str]): Members to extract, specified by a list
+            of names.
+
+        """
+        if path is None: #pragma no cover
+            path = '.'
+        if members is None:
+            members = self.member_names
+        else:
+            members = [self.validate_member_name(x) for x in members]
+        for name in members:
+            fname = os.path.join(path, name)
+            if self.member_is_dir(name):
+                if not os.path.isdir(fname):
+                    os.makedirs(fname)
+            else:
+                parent = os.path.dirname(fname)
+                if not os.path.isdir(parent):
+                    os.makedirs(parent)
+                with self.open_member(name, 'rb') as src, builtins.open(fname, 'wb') as dst:
+                    shutil.copyfileobj(src, dst)
     
         
     def close(self):
@@ -425,7 +456,7 @@ class TarArchive(Archive):
           Members of tar archive cannot be opened in write mode.
         """
         mode = mode.lower()
-        if 'r' not in mode:
+        if 'r' not in mode: #pragma no cover
             raise ValueError('members of tar archive can not be opened in'
                              ' write mode')
         if self.member_is_dir(name):
@@ -435,10 +466,34 @@ class TarArchive(Archive):
         if 'b' not in mode:
             if sys.version_info[0] >= 3:
                 f = io.TextIOWrapper(f)
-            else:
+            else: #pragma no cover
                 raise ValueError('I do not know how to wrap binary file'
                                  ' object to text io.')
         return f
+
+
+    def extract(self, path=None, members=None):
+        """Extract members to a location
+
+        Args:
+
+          path (path-like): Location of the extracted files.
+
+          members (Seq[str]): Members to extract, specified by a list
+            of names.
+
+        """
+        if members is not None:
+            info = []
+            for name in members:
+                name = self.validate_member_name(name)
+                if name.endswith('/'):
+                    name = name[:-1]
+                info.append(self._file.getmember(name))
+            members = info
+        if path is None: #pragma no cover
+            path = '.'
+        self._file.extractall(path, members)
 
     
     def close(self):
@@ -487,10 +542,28 @@ class ZipArchive(Archive):
             if name.endswith('/'):
                 raise ValueError('Directory member cannot be opened in'
                                  ' read mode.')
-        f = self._file.open(name, mode)
+        assert 'r' in mode or 'w' in mode
+        mode2 = 'r' if 'r' in mode else 'w'
+        f = self._file.open(name, mode2)
         if 'b' not in mode:
             f = io.TextIOWrapper(f)
         return f
+
+
+    def extract(self, path=None, members=None):
+        """Extract members to a location
+
+        Args:
+
+          path (path-like): Location of the extracted files.
+
+          members (Seq[str]): Members to extract, specified by a list
+            of names.
+
+        """
+        if members is not None:
+            members = [self.validate_member_name(x) for x in members]
+        self._file.extractall(path, members)
 
 
     def close(self):
@@ -508,8 +581,15 @@ class DirArchive(Archive):
 
     @property
     def member_names(self):
-        names = [x+'/' if os.path.isdir(os.path.join(self._file, x)) else x
-                 for x in os.listdir(self._file)]
+        names = []
+        for p, dirs, files in os.walk(self._file):
+            dirnames = [os.path.relpath(os.path.join(p, x), self._file)+'/'
+                        for x in dirs]
+            names += dirnames
+            fnames = [os.path.relpath(os.path.join(p, x), self._file)
+                      for x in files]
+            names += fnames
+            names = [x.replace('\\', '/') for x in names]
         return names
 
     
@@ -538,6 +618,39 @@ class DirArchive(Archive):
         path = os.path.join(self._file, name)
         return builtins.open(path, mode, **kwargs)
 
+    
+    def extract(self, path=None, members=None):
+        """Extract members to a location
+
+        Args:
+
+          path (path-like): Location of the extracted files.
+
+          members (Seq[str]): Members to extract, specified by a list
+            of names.
+
+        """
+        if path is None: #pragma no cover
+            path = '.'
+        if os.path.samefile(self._file, path): #pragma no cover
+            return
+        
+        if members is None:
+            members = self.member_names
+        else:
+            members = [self.validate_member_name(x) for x in members]
+        for name in members:
+            fname = os.path.join(path, name)
+            if self.member_is_dir(name):
+                if not os.path.isdir(fname):
+                    os.makedirs(fname)
+            else:
+                parent = os.path.dirname(fname)
+                if not os.path.isdir(parent):
+                    os.makedirs(parent)
+                shutil.copyfile(os.path.join(self._file, name), fname)
+            
+        
 
 def open(*args, **kwargs):
     """Shortcut to constructor of :class:`Archive`

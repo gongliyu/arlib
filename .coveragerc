@@ -8,8 +8,5 @@ omit=
 
 [report]
 exclude_lines =
-    pragma: no cover
-    return NotImplemented
-    raise NotImplementedError
+    pragma no cover
     pass
-    raise

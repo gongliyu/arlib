@@ -13,6 +13,7 @@ ChangeLog
 * Reimplement auto_engine mechanism using *decoutils* package
 * Add functionality to check whether a member is a directory or
   regular file (:pr:`9`).
+* Add functionality to extract members (:pr:`10`).
 
 0.0.3
 -----

@@ -106,6 +106,15 @@ contained in the archive, e.g.,
 print(ar.member_names)
 ```
 
+### Check member
+Use the method *member_is_dir* and *member_is_file* to check whether a member is a directory or a regular file
+
+``` python
+ar = arlib.open('abc.tar', 'r')
+ar.member_is_dir('member_name')
+ar.member_is_file('member_name')
+```
+
 ### Open a member
 
 Use the method *open_member* to open a member in the archive as a file
@@ -114,6 +123,16 @@ object
 ``` python
 with ar.open_member('a.txt', 'r') as f:
     # do sth by using f as an opened file object
+```
+
+### Extract members to a location
+
+Use the method *extract* to extract members to a specified location
+
+``` python
+ar = arlib.open('abc.tar', 'r')
+ar.extract() # extract all the members to the current working directory
+ar.extract(path='d:/hello', members=['abc.txt', 'dir1/'])
 ```
 
 ## License
