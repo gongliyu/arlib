@@ -67,34 +67,32 @@ conda install -c liyugong arlib
 
 ## Simple example
 
-
-The simplest way to use *arlib* is through the *arlib.Archive* class. 
+The abstract class *arlib.Archive* defines the common interface to
+handle different archive types, such as tar file, zip file or an
+directory. Three concrete classes *arlib.TarArchive*,
+*arlib.ZipArchive* and *arlib.DirArchive* implement the interface
+correspondingly.
 
 ### Open archive
 
-By construct an *arlib.Archive* object, we can open an archive file for read or write. 
-
-The constructor of *arlib.Archive* also works as a factory which
-automatically create engine with type determined by the file
-properties and the *mode* argument. Therefore,
-
-``` python
-ar = arlib.Archive('abc.tar.gz', 'r')
-```
-
-will create an object of type *arlib.TarArchive*, and
-
-``` python
-ar = arlib.Archive('abc.zip', 'r')
-```
-
-will create an object of type *arlib.ZipArchive* if the corresponding
-files exist and are real tar or zip files.
-
-The function *arlib.open* works as a shortcut to the constructor of *arlib.Archive*:
-
+The simplest way to open an archive is using *arlib.open* function
 ``` python
 ar = arlib.open('abc.tar.gz', 'r')
+```
+
+This will determine the type of the archive automatically and return a
+corresponding object of one of the three engine classes. If we don't
+want the automatic engine determination mechanism, we can also
+specify the class via argument *engine*, e.g.
+
+``` python
+ar = arlib.open('abc.tar.gz', 'r', engine=ZipArchive)
+```
+
+or we can simply construct an object of the engine class
+
+``` python
+ar = arlib.ZipArchive('abc.tar.gz', 'r')
 ```
 
 ### List member names
@@ -107,7 +105,9 @@ print(ar.member_names)
 ```
 
 ### Check member
-Use the method *member_is_dir* and *member_is_file* to check whether a member is a directory or a regular file
+
+Use the method *member_is_dir* and *member_is_file* to check whether a
+member is a directory or a regular file
 
 ``` python
 ar = arlib.open('abc.tar', 'r')

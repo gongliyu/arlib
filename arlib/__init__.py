@@ -229,7 +229,12 @@ def assert_is_archive(path, mode):
         raise ValueError(str(path)+' cannot be opened as a valid archive '
                          'with '+mode)
 
-class Archive:
+if sys.version_info[0] > 2 and sys.version_info[1] > 3: # pragma no cover
+    base_cls = abc.ABC
+else: #pragma no cover
+    base_cls = object
+    
+class Archive(base_cls):
 
     """Common-interface to different type of archive files manipulation
     
@@ -264,18 +269,6 @@ class Archive:
 
     """
     __metaclass__ = abc.ABCMeta
-    def __new__(cls, path, mode='r', engine=None, **kwargs):
-        if cls is not Archive:
-            return object.__new__(cls)
-
-        if engine is None:
-            engine = auto_engine(path, mode)
-            if engine is None:
-                raise RuntimeError('Cannot automatically determine engine.')
-        if not issubclass(engine, Archive):
-            raise TypeError('engine must be a subclass of Archive, received:'
-                            ' '+str(engine))
-        return engine.__new__(engine, path, mode, **kwargs)
 
     @property
     @abc.abstractmethod
@@ -424,10 +417,11 @@ class TarArchive(Archive):
         if isinstance(path, tarfile.TarFile):
             self._file = path
             self._need_close = False
-        elif isinstance(path, io.IOBase):
+        elif (isinstance(path, io.IOBase) or
+              sys.version_info[0] == 2 and isinstance(path, file)):
             self._file = tarfile.open(fileobj=path, mode=mode, **kwargs)
         else:
-            self._file = tarfile.open(path, mode=mode, **kwargs)
+            self._file = tarfile.open(name=path, mode=mode, **kwargs)
 
     @property
     def member_names(self):
@@ -654,7 +648,38 @@ class DirArchive(Archive):
             
         
 
-def open(*args, **kwargs):
-    """Shortcut to constructor of :class:`Archive`
+def open(path, mode='r', engine=None, *args, **kwargs):
+    """Open an archive file
+
+    Args:
+
+      path (path-like, file-like): Path of the archive to read or write
+
+      mode (str): The mode to open the member, same as in
+        :func:`open`. Default to 'r'.
+      
+      engine (type): Class object of a specific subclass Archive which
+        implements the logic of processing a specific type of
+        Archive. Provided implements:
+
+        * ZipArchive: zip file archive using the `zipfile` module
+    
+        * TarArchive: tar file archive using the `tarfile` module
+
+        * DirArchive: directory as an archive using the `pathlib` module
+
+        * None: Automatically determine engines by file properties and
+          mode
+
+      kwargs : Additional keyword arguments passed to the underlying
+        engine constructor
+    
     """
-    return Archive(*args, **kwargs)
+    if engine is None:
+        engine = auto_engine(path, mode)
+        if engine is None:
+            raise RuntimeError('Cannot automatically determine engine.'
+                               'If you mode is "r", check whether the '
+                               'archive file exists.')
+    assert issubclass(engine, Archive)
+    return engine(path, mode, **kwargs)

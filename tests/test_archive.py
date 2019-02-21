@@ -33,6 +33,16 @@ def test_auto_engine(fname, mode, res):
     assert arlib.auto_engine(fname, mode) is res
 
 
+def test_open_with_engine():
+    fname = os.path.join(data_path, 'zipfile.zip')
+    with arlib.open(fname, engine=None) as ar:
+        assert set(ar.member_names) == set(['a.txt', 'b.txt'])
+
+
+def test_construct_abstract():
+    with pytest.raises(Exception):
+        arlib.Archive()
+
 def test_auto_engine_error():
     dst = tempfile.mkdtemp()
     

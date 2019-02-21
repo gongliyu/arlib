@@ -29,14 +29,11 @@ engines are implemented in the library:
 * :class:`DirArchive`: Treat a directory as an archive and files
   inside as members
 
-Since :class:`Archive` is a *abc*, which can not be instantiate, we
-implement it as a factory to produce concrete engines instead. The
-design is inspired by the :mod:`pathlib`. The type of concrete engines
-are automatically determined by the archive file property and the
-*mode* argument to open the archive.
+Since :class:`Archive` is a *abc*, which can not be instantiate, a
+function :func:`open` can be used as a factory to create concrete
+engines. The type of concrete engines are automatically determined by
+the archive file property and the *mode* argument to open the archive.
 
-The function :func:`open` is a shortcut to the constructor of
-:class:`Archive`.
 
 Automatically engine selection
 ------------------------------
