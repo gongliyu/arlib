@@ -72,6 +72,33 @@ def register_auto_engine(func, priority=50, prepend=False):
 
 
 @register_auto_engine
+def auto_engine_tar(path, mode):
+    if 'r' in mode:
+        if isinstance(path, tarfile.TarFile):
+            if path.mode != 'r':
+                raise ValueError('Mode of TarFile object is not compatible'
+                                 ' with the mode argument.')
+            return TarArchive
+        
+        if isinstance(path, _path_classes):
+            path = os.path.abspath(path)
+            if os.path.isfile(path) and tarfile.is_tarfile(path):
+                return TarArchive
+    else:
+        if isinstance(path, tarfile.TarFile): #pragma no cover
+            if path.mode not in ['a', 'w', 'x']:
+                raise ValueError('Mode of TarFile object is not compatible'
+                                 ' with the mode argument.')
+            return TarArchive
+        
+        if isinstance(path, _path_classes):
+            if any(fnmatch.fnmatch(path, x) for x in
+                   ['*.tar', '*.tgz', '*.tar.gz', '*.tar.bz2', '*.tar.xz']):
+                return TarArchive
+    return None
+    
+
+@register_auto_engine
 def auto_engine_zip(path, mode):
     if 'r' in mode:
         if isinstance(path, zipfile.ZipFile):
@@ -103,31 +130,6 @@ def auto_engine_zip(path, mode):
                 return ZipArchive
     return None
 
-@register_auto_engine
-def auto_engine_tar(path, mode):
-    if 'r' in mode:
-        if isinstance(path, tarfile.TarFile):
-            if path.mode != 'r':
-                raise ValueError('Mode of TarFile object is not compatible'
-                                 ' with the mode argument.')
-            return TarArchive
-        
-        if isinstance(path, _path_classes):
-            path = os.path.abspath(path)
-            if os.path.isfile(path) and tarfile.is_tarfile(path):
-                return TarArchive
-    else:
-        if isinstance(path, tarfile.TarFile): #pragma no cover
-            if path.mode not in ['a', 'w', 'x']:
-                raise ValueError('Mode of TarFile object is not compatible'
-                                 ' with the mode argument.')
-            return TarArchive
-        
-        if isinstance(path, _path_classes):
-            if any(fnmatch.fnmatch(path, x) for x in
-                   ['*.tar', '*.tgz', '*.tar.gz', '*.tar.bz2', '*.tar.xz']):
-                return TarArchive
-    return None
 
 @register_auto_engine
 def auto_engine_dir(path, mode):
