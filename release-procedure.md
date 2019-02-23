@@ -16,6 +16,6 @@
 
 * Increase version number
 
-    Change __version__ = 'x.x.x' in arlib/__init__.py
+    Change \_\_version\_\_ = 'x.x.x' in arlib/\_\_init\_\_.py
     
 * Build conda recipe
