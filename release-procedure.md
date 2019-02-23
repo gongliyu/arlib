@@ -2,7 +2,7 @@
 
 * Tag commit
 
-        git tag -a x.x.x -m 'Version x.x.x'
+        git tag -a x.x.x -m "Version x.x.x"
 
 * Push to github
 
