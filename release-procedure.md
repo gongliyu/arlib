@@ -6,7 +6,7 @@
 
 * Push to github
 
-        git push pydata master --tags
+        git push --tags
 
 * Upload to PyPI
 
