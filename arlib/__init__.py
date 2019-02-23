@@ -18,7 +18,7 @@ if sys.version_info[0] == 2: #pragma no cover
 else: #pragma no cover
     import builtins
     
-__version__ = '0.0.4'
+__version__ = '0.1.0'
 
 _auto_engine = []
 
