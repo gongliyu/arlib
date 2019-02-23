@@ -108,7 +108,9 @@ def auto_engine_zip(path, mode):
             return ZipArchive
 
         if (sys.version_info[0] >= 3 and sys.version_info[1] >= 1 and
-            isinstance(path, io.IOBase) and 'b' in path.mode):
+            isinstance(path, io.IOBase) and
+            (hasattr(path, 'mode') and 'b' in path.mode or
+             not hasattr(path, 'mode'))):
             if not path.readable():
                 raise ValueError('Opened file is not readable, but the mode'
                                  'argument is '+mode)
@@ -680,8 +682,7 @@ def open(path, mode='r', engine=None, *args, **kwargs):
     if engine is None:
         engine = auto_engine(path, mode)
         if engine is None:
-            raise RuntimeError('Cannot automatically determine engine.'
-                               'If you mode is "r", check whether the '
-                               'archive file exists.')
+            raise RuntimeError('Cannot automatically determine engine for '
+                               'path:', path, ' mode:', mode)
     assert issubclass(engine, Archive)
     return engine(path, mode, **kwargs)

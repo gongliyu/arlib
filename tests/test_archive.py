@@ -33,16 +33,31 @@ def test_auto_engine(fname, mode, res):
     assert arlib.auto_engine(fname, mode) is res
 
 
+    
+def test_zip_in_tar():
+    fname = os.path.join(data_path, 'zip_in_tar.tar')
+    with arlib.open(fname) as ar:
+        if sys.version_info[0] == 2 or sys.version_info[2] < 15:
+            return
+        with arlib.open(ar.open_member('a/a.zip','rb')) as ar2:
+            with ar2.open_member('a.txt') as f:
+                assert f.read() == 'a'
+        with arlib.open(ar.open_member('b.zip', 'rb')) as ar2:
+            with ar2.open_member('b.txt') as f:
+                assert f.read() == 'b'
+
+                
 def test_open_with_engine():
     fname = os.path.join(data_path, 'zipfile.zip')
     with arlib.open(fname, engine=None) as ar:
         assert set(ar.member_names) == set(['a.txt', 'b.txt'])
 
-
+        
 def test_construct_abstract():
     with pytest.raises(Exception):
         arlib.Archive()
 
+        
 def test_auto_engine_error():
     dst = tempfile.mkdtemp()
     
